@@ -9,7 +9,7 @@ import Sidebar from './components/Sidebar';
 import axios from 'axios';
 
 // Configure axios defaults
-axios.defaults.baseURL = 'http://localhost:8000/api/v1';
+axios.defaults.baseURL = 'http://localhost:8000//api/v1';
 axios.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
