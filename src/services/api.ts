@@ -45,13 +45,18 @@ export const supportService = {
     api.get(`/admin/nastrigo/SupportQuery${userType ? `?userType=${userType}` : ''}`),
 };
 
+// services/api.ts or services/bannerService.ts
 export const bannerService = {
   create: (data: { targetAudience: 'Customer' | 'Seller'; image: string }) =>
     api.post('/admin/nastrigo/CreateBanner', data),
-  getAll: () => api.get('/admin/nastrigo/GetBanner'),
+
+  getAll: () =>
+    api.get('/admin/nastrigo/GetBanner').then(res => res.data), // <- just data
+  
   update: (bannerId: string, active: boolean) =>
     api.patch(`/admin/nastrigo/UpdateBanner/${bannerId}`, { active }),
 };
+
 
 export const notificationService = {
   notifySellers: (data: { title: string; body: string }) =>

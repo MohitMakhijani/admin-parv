@@ -6,9 +6,9 @@ import { bannerService } from '../services/api';
 const Banners = () => {
   const queryClient = useQueryClient();
 
-  const { data: banners } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['banners'],
-    queryFn: bannerService.getAll
+    queryFn: bannerService.getAll,
   });
 
   const updateBannerMutation = useMutation({
@@ -19,12 +19,17 @@ const Banners = () => {
     }
   });
 
+  const banners = data?.data ?? []; // 🟢 Ensure it's always an array
+
+  if (isLoading) return <Layout><p>Loading...</p></Layout>;
+  if (isError) return <Layout><p>Error loading banners</p></Layout>;
+
   return (
     <Layout>
       <div className="space-y-6">
         <h1 className="text-3xl font-bold text-gray-900">Banners</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {banners?.data?.map((banner: any) => (
+          {banners.map((banner: any) => (
             <div key={banner._id} className="bg-white rounded-lg shadow p-6">
               <img
                 src={banner.imageUrl}
@@ -44,8 +49,8 @@ const Banners = () => {
                     active: !banner.active
                   })}
                   className={`px-4 py-2 rounded ${
-                    banner.active ? 'bg-red-600 text-white' : 'bg-green-600 text-white'
-                  }`}
+                    banner.active ? 'bg-red-600' : 'bg-green-600'
+                  } text-white`}
                 >
                   {banner.active ? 'Deactivate' : 'Activate'}
                 </button>
