@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://api.mytrands.com/api/v1';
+const BASE_URL = ' http://localhost:8000/api/v1';
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -8,12 +8,20 @@ const api = axios.create({
 
 // Add request interceptor to add token to all requests
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('adminToken');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
+
+export const authService = {
+  login: (data: { email: string; password: string }) =>
+    api.post('/admin/nastrigo/login', data),
+  logout: () => {
+    localStorage.removeItem('adminToken');
+  }
+};
 
 export const sellerService = {
   getPendingRegistrations: () => api.get('/admin/nastrigo/pending-registration'),
