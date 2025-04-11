@@ -35,7 +35,7 @@ function Sellers() {
 			}
 
 			const response = await axios.get(
-				"/admin/nastrigo/seller/list",
+				`/admin/nastrigo/seller/list?search=${searchTerm}`,
 				{ params }
 			);
 			console.log("seller list=", response.data.data);
@@ -59,20 +59,7 @@ function Sellers() {
 			console.error("Error fetching sellers:", error);
 		}
 	};
-	const handleSearch = async () => {
-		try {
-			const response = await axios.get(
-				"/admin/nastrigo/seller/search"
-			);
-			console.log(
-				" search seller list=",
-				response.data.data
-			);
-			setSellers(response.data.data);
-		} catch (error) {
-			console.error("Error fetching sellers:", error);
-		}
-	};
+
 	const todaySellerRegestration = async () => {
 		try {
 			const response = await axios.get(
@@ -138,7 +125,7 @@ function Sellers() {
 					/>
 				</div>
 				<button
-					// onClick={handleSearch}
+					onClick={fetchSellers}
 					className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
 				>
 					Search
@@ -161,12 +148,16 @@ function Sellers() {
 					<thead>
 						<tr className="bg-gray-50">
 							{[
+								"rank",
 								"Name",
 								"Shop",
 								"City",
 								"Rating",
 								"Revenue",
 								"Actions",
+								"products",
+								"sales",
+								"report count",
 							].map((heading) => (
 								<th
 									key={heading}
@@ -183,10 +174,11 @@ function Sellers() {
 							<tr
 								key={seller._id}
 								className="hover:bg-gray-100 transition cursor-pointer"
-								onClick={() =>
-									navigate(`/seller/${seller._id}`)
-								} // use navigate instead of wrapping <Link> around <tr>
+								// use navigate instead of wrapping <Link> around <tr>
 							>
+								<td className="px-6 py-4 whitespace-nowrap text-gray-700">
+									{seller.rank}
+								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
 									<div className="flex items-center">
 										<img
@@ -237,6 +229,25 @@ function Sellers() {
 											? "Active"
 											: "Inactive"}
 									</button>
+								</td>
+								<td
+									className="px-6 py-4 whitespace-nowrap text-gray-700"
+									onClick={() =>
+										navigate(`/products/${seller._id}`)
+									}
+								>
+									{seller.totalListedProducts}
+								</td>
+								<td
+									className="px-6 py-4 whitespace-nowrap text-gray-700"
+									onClick={() =>
+										navigate(`/seller/${seller._id}`)
+									}
+								>
+									{seller.totalProductSales}
+								</td>
+								<td className="px-6 py-4 whitespace-nowrap text-gray-700">
+									{seller.reportCount}
 								</td>
 							</tr>
 						))}

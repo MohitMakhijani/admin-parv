@@ -14,11 +14,13 @@ import axios from "axios";
 import LoggedInRoutes from "./components/LoggedInRoutes";
 import Login from "./pages/Login";
 import SellerDetail from "./pages/SellerDetail";
+import ProductList from "./pages/ProductList";
+import SeasonsComponent from "./pages/Seasons";
 
 // Configure axios defaults
 axios.defaults.baseURL = "http://localhost:8000/api/v1";
 axios.interceptors.request.use((config) => {
-	console.log(localStorage.getItem("token"));
+	// console.log(localStorage.getItem("token"));
 
 	const token = localStorage.getItem("token");
 	if (token) {
@@ -64,6 +66,22 @@ function App() {
 							element={
 								<LoggedInRoutes>
 									<SellerDetail />
+								</LoggedInRoutes>
+							}
+						/>
+						<Route
+							path="/products/:id"
+							element={
+								<LoggedInRoutes>
+									<ProductList />
+								</LoggedInRoutes>
+							}
+						/>
+						<Route
+							path="/seasons"
+							element={
+								<LoggedInRoutes>
+									<SeasonsComponent />
 								</LoggedInRoutes>
 							}
 						/>

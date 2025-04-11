@@ -43,6 +43,11 @@ const LogIn = () => {
 				"token",
 				response?.data?.data?.accessToken
 			);
+
+			localStorage.setItem(
+				"refreshtoken",
+				response?.data?.data?.refreshToken
+			);
 			localStorage.setItem(
 				"user",
 				JSON.stringify(response?.data?.data?.user)

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 function SellerDetail() {
-	const [seller, setseller] = useState([]);
+	const [products, setproducts] = useState([]);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
 	const [loading, setLoading] = useState(false);
@@ -14,10 +14,11 @@ function SellerDetail() {
 		try {
 			setLoading(true);
 			const response = await axios.get(
-				`/admin/nastrigo/seller/sales/${id}?page=${page}&limit=${limit}`
+				`/admin/nastrigo/seller/products/${id}?page=${page}&limit=${limit}`
 			);
-			console.log("seller list=", response.data.data);
-			setseller(response.data.data.salesData);
+			console.log("product list=", response.data.data);
+
+			setproducts(response.data.data.products);
 			setTotalPages(response.data.data.totalPages || 1);
 			setCurrentPage(response.data.data.currentPage || 1);
 		} catch (error) {
@@ -56,44 +57,50 @@ function SellerDetail() {
 			) : (
 				<>
 					<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-						{seller?.length > 0 ? (
-							seller.map((s, index) => (
+						{products?.length > 0 ? (
+							products.map((s, index) => (
 								<div
 									key={index}
-									className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 p-6 flex flex-col items-center"
+									className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4 flex flex-col"
 								>
 									<img
-										src={s.productImage[0]}
-										alt={s.productName}
-										className="w-32 h-32 object-cover rounded-full mb-4 border-2 border-gray-200"
+										src={s.images[0]}
+										alt={s.title}
+										className="w-full h-48 object-cover rounded-xl mb-4"
 									/>
-									<h2 className="text-lg font-semibold mb-2">
-										{s.productName}
+									<h2 className="text-lg font-bold text-gray-800 mb-2">
+										{s.title}
 									</h2>
-									<p className="text-gray-600 mb-1">
-										Customer: {s.customerName}
+
+									<div className="flex items-center mb-2">
+										<span className="text-yellow-500 text-sm mr-1">
+											⭐ {s.avgRating}
+										</span>
+										<span className="text-gray-500 text-xs">
+											({s.totalRatings} ratings)
+										</span>
+									</div>
+
+									<p className="text-gray-600 text-sm mb-4 line-clamp-2">
+										{s.description}
 									</p>
-									<p className="text-gray-600 mb-1">
-										Email: {s.customerEmail}
-									</p>
-									<p className="text-green-600 font-bold mb-1">
-										Revenue: ₹{s.totalRevenue}
-									</p>
-									<p className="text-blue-500 font-semibold mb-1">
-										Quantity Sold: {s.totalQuantitySold}
-									</p>
-									<p className="text-gray-500 text-sm">
-										Picked Up On:{" "}
-										{new Date(
-											s.pickedUpDate
-										).toLocaleDateString()}
-									</p>
+
+									<div className="flex items-center justify-between mt-auto">
+										<div>
+											<span className="text-xl font-bold text-green-600">
+												₹{s.discounted_Price}
+											</span>
+											<span className="text-sm line-through text-gray-400 ml-2">
+												₹{s.price}
+											</span>
+										</div>
+									</div>
 								</div>
 							))
 						) : (
-							<p className="col-span-full text-center text-gray-500">
-								No sales found.
-							</p>
+							<div className="text-center text-gray-500">
+								No products found.
+							</div>
 						)}
 					</div>
 
