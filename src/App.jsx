@@ -13,6 +13,7 @@ import Sidebar from "./components/Sidebar";
 import axios from "axios";
 import LoggedInRoutes from "./components/LoggedInRoutes";
 import Login from "./pages/Login";
+import SellerDetail from "./pages/SellerDetail";
 
 // Configure axios defaults
 axios.defaults.baseURL = "http://localhost:8000/api/v1";
@@ -55,6 +56,14 @@ function App() {
 							element={
 								<LoggedInRoutes>
 									<PendingRegistrations />
+								</LoggedInRoutes>
+							}
+						/>
+						<Route
+							path="/seller/:id"
+							element={
+								<LoggedInRoutes>
+									<SellerDetail />
 								</LoggedInRoutes>
 							}
 						/>

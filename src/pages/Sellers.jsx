@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { set } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
 
 function Sellers() {
 	const [sellers, setSellers] = useState([]);
+	const [disabledsellers, setDisabledSellers] = useState(
+		[]
+	);
 	const [
 		todaysSellerRegestration,
 		setTodaysSellerRegestration,
@@ -12,10 +16,11 @@ function Sellers() {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
 	const [selectedCity, setSelectedCity] = useState("");
-
+	const navigate = useNavigate();
 	useEffect(() => {
 		fetchSellers();
 		todaySellerRegestration();
+		fetchDisabledSellers();
 	}, [currentPage, selectedCity]);
 
 	const fetchSellers = async () => {
@@ -33,8 +38,37 @@ function Sellers() {
 				"/admin/nastrigo/seller/list",
 				{ params }
 			);
+			console.log("seller list=", response.data.data);
 			setSellers(response.data.data.sellers);
 			setTotalPages(response.data.data.totalPages);
+		} catch (error) {
+			console.error("Error fetching sellers:", error);
+		}
+	};
+	const fetchDisabledSellers = async () => {
+		try {
+			const response = await axios.get(
+				"/admin/nastrigo/get-disabled-sellers"
+			);
+			console.log(
+				" disabled seller list=",
+				response.data.data
+			);
+			setDisabledSellers(response.data.data);
+		} catch (error) {
+			console.error("Error fetching sellers:", error);
+		}
+	};
+	const handleSearch = async () => {
+		try {
+			const response = await axios.get(
+				"/admin/nastrigo/seller/search"
+			);
+			console.log(
+				" search seller list=",
+				response.data.data
+			);
+			setSellers(response.data.data);
 		} catch (error) {
 			console.error("Error fetching sellers:", error);
 		}
@@ -51,16 +85,30 @@ function Sellers() {
 		}
 	};
 
-	const toggleSellerStatus = async (sellerId, isActive) => {
+	const toggleSellerStatus = async (sellerId) => {
 		try {
-			const endpoint = isActive
-				? `/admin/nastrigo/disable/${sellerId}`
-				: `/admin/nastrigo/activate/${sellerId}`;
+			const endpoint = `/admin/nastrigo/disable/${sellerId}`;
 
-			await axios.post(endpoint);
+			await axios.put(endpoint);
 			fetchSellers();
 		} catch (error) {
-			console.error("Error toggling seller status:", error);
+			console.error(
+				"Error Disabling seller status:",
+				error
+			);
+		}
+	};
+	const toggleActiveSellerStatus = async (sellerId) => {
+		try {
+			const endpoint = `/admin/nastrigo/activate/${sellerId}`;
+
+			await axios.put(endpoint);
+			fetchSellers();
+		} catch (error) {
+			console.error(
+				"Error activating seller status:",
+				error
+			);
 		}
 	};
 
@@ -112,28 +160,107 @@ function Sellers() {
 				<table className="min-w-full">
 					<thead>
 						<tr className="bg-gray-50">
+							{[
+								"Name",
+								"Shop",
+								"City",
+								"Rating",
+								"Revenue",
+								"Actions",
+							].map((heading) => (
+								<th
+									key={heading}
+									className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+								>
+									{heading}
+								</th>
+							))}
+						</tr>
+					</thead>
+
+					<tbody className="divide-y divide-gray-200">
+						{sellers.map((seller) => (
+							<tr
+								key={seller._id}
+								className="hover:bg-gray-100 transition cursor-pointer"
+								onClick={() =>
+									navigate(`/seller/${seller._id}`)
+								} // use navigate instead of wrapping <Link> around <tr>
+							>
+								<td className="px-6 py-4 whitespace-nowrap">
+									<div className="flex items-center">
+										<img
+											src={seller.avatar}
+											alt={seller.fullName}
+											className="h-10 w-10 rounded-full mr-3 object-cover"
+										/>
+										<div>
+											<div className="font-medium text-gray-900">
+												{seller.fullName}
+											</div>
+											<div className="text-sm text-gray-500">
+												{seller.brand || "No Brand"}
+											</div>
+										</div>
+									</div>
+								</td>
+
+								<td className="px-6 py-4 whitespace-nowrap text-gray-700">
+									{seller.shopName}
+								</td>
+
+								<td className="px-6 py-4 whitespace-nowrap text-gray-700">
+									{seller.city}
+								</td>
+
+								<td className="px-6 py-4 whitespace-nowrap text-gray-700">
+									{seller.ProductRating?.toFixed(2)}
+								</td>
+
+								<td className="px-6 py-4 whitespace-nowrap text-gray-700">
+									₹{seller.totalRevenue.toLocaleString()}
+								</td>
+
+								<td className="px-6 py-4 whitespace-nowrap">
+									<button
+										onClick={(e) => {
+											e.stopPropagation(); // prevent row click
+											toggleSellerStatus(seller._id);
+										}}
+										className={`px-3 py-1 rounded-full text-sm font-semibold ${
+											seller.isActive
+												? "bg-green-100 text-green-800 hover:bg-green-200"
+												: "bg-red-100 text-red-800 hover:bg-red-200"
+										} transition`}
+									>
+										{seller.isActive
+											? "Active"
+											: "Inactive"}
+									</button>
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+
+			{/* Disabled Seller List */}
+			<h1>Disabled Sellers List</h1>
+			<div className="bg-white rounded-lg shadow overflow-hidden">
+				<table className="min-w-full">
+					<thead>
+						<tr className="bg-gray-50">
 							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
 								Name
 							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-								Shop
-							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-								City
-							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-								Rating
-							</th>
-							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-								Revenue
-							</th>
+
 							<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
 								Actions
 							</th>
 						</tr>
 					</thead>
 					<tbody className="divide-y divide-gray-200">
-						{sellers.map((seller) => (
+						{disabledsellers.map((seller) => (
 							<tr key={seller._id}>
 								<td className="px-6 py-4 whitespace-nowrap">
 									<div className="flex items-center">
@@ -146,41 +273,20 @@ function Sellers() {
 											<div className="font-medium">
 												{seller.fullName}
 											</div>
-											<div className="text-sm text-gray-500">
-												{seller.brand || "No Brand"}
-											</div>
 										</div>
 									</div>
 								</td>
-								<td className="px-6 py-4 whitespace-nowrap">
-									{seller.shopName}
-								</td>
-								<td className="px-6 py-4 whitespace-nowrap">
-									{seller.city}
-								</td>
-								<td className="px-6 py-4 whitespace-nowrap">
-									{seller.ProductRating.toFixed(2)}
-								</td>
-								<td className="px-6 py-4 whitespace-nowrap">
-									${seller.totalRevenue.toLocaleString()}
-								</td>
+
 								<td className="px-6 py-4 whitespace-nowrap">
 									<button
 										onClick={() =>
-											toggleSellerStatus(
-												seller._id,
-												seller.isActive
-											)
+											toggleActiveSellerStatus(seller._id)
 										}
-										className={`px-3 py-1 rounded-full text-sm ${
-											seller.isActive
-												? "bg-red-100 text-red-800 hover:bg-red-200"
-												: "bg-green-100 text-green-800 hover:bg-green-200"
-										}`}
+										className={`px-3 py-1 rounded-full text-sm
+										text-green-800 hover:bg-green-200"
+										`}
 									>
-										{seller.isActive
-											? "Disable"
-											: "Activate"}
+										Activate
 									</button>
 								</td>
 							</tr>

@@ -16,6 +16,7 @@ function Dashboard() {
 	const [analytics, setAnalytics] = useState(null);
 	const [salesData, setSalesData] = useState([]);
 	const [totalRevenue, setTotalRevenue] = useState(0);
+	const [months, setMonths] = useState(1);
 	const [todayStats, setTodayStats] = useState({
 		demands: 0,
 		products: 0,
@@ -27,16 +28,21 @@ function Dashboard() {
 		customerRegistrations: [],
 		sellerRegistrations: [],
 		salesComplete: [],
+		salesmonthlyRes: [],
+		salesyearlyRes: [],
+		sellerRegistrationsmonthly: [],
+		sellerRegistrationsyearly: [],
 	});
 	const [totalStats, setTotalStats] = useState({
 		products: 0,
 		salesStatus: [],
 	});
 	const [sevendayssales, setsevendayssales] = useState([]);
+	const [year, setYear] = useState(2000);
 
 	useEffect(() => {
 		fetchDashboardData();
-	}, []);
+	}, [months, year]);
 
 	const fetchDashboardData = async () => {
 		try {
@@ -53,6 +59,12 @@ function Dashboard() {
 				totalProductRes,
 				salesStatusRes,
 				sevendayssales,
+				monthlycustomerRes,
+				yearlycustomerRes,
+				salesmonthlyRes,
+				salesyearlyRes,
+				sellerRegistrationsmonthly,
+				sellerRegistrationsyearly,
 			] = await Promise.all([
 				axios.get("/admin/nastrigo/sellers-analytics"),
 				axios.get(
@@ -70,7 +82,7 @@ function Dashboard() {
 					"/admin/nastrigo/get-todays-customer-registrations"
 				),
 				axios.get(
-					"/admin/nastrigo/get-monthly-product-analysis?month=4"
+					`/admin/nastrigo/get-monthly-product-analysis?month=${months}`
 				),
 				axios.get(
 					"/admin/nastrigo/get-total-product-count"
@@ -78,6 +90,24 @@ function Dashboard() {
 				axios.get("/admin/nastrigo/get-total-sales-status"),
 				axios.get(
 					"/admin/nastrigo/get-last-7-days-sales-analysis"
+				),
+				axios.get(
+					`/admin/nastrigo/get-customer-registration-analysis?month=${months}`
+				),
+				axios.get(
+					`/admin/nastrigo/get-customer-registration-analysis?year=${year}`
+				),
+				axios.get(
+					`admin/nastrigo/get-sales-complete-analysis?month=${months}`
+				),
+				axios.get(
+					`/admin/nastrigo/get-customer-registration-analysis?year=${year}`
+				),
+				axios.get(
+					`admin/nastrigo/get-seller-registration-analysis?month=${months}`
+				),
+				axios.get(
+					`/admin/nastrigo/get-seller-registration-analysis?year=${year}`
 				),
 			]);
 			// console.log(analyticsRes.data.data);
@@ -95,6 +125,14 @@ function Dashboard() {
 
 			setMonthlyStats({
 				products: monthlyProductRes.data.data,
+				customer: monthlycustomerRes.data.data,
+				customeryear: yearlycustomerRes.data.data,
+				salesmonthlyRes: salesmonthlyRes.data.data,
+				salesyearlyRes: salesyearlyRes.data.data,
+				sellerRegistrationsmonthly:
+					sellerRegistrationsmonthly.data.data,
+				sellerRegistrationsyearly:
+					sellerRegistrationsyearly.data.data,
 			});
 
 			setTotalStats({
@@ -102,8 +140,8 @@ function Dashboard() {
 				salesStatus: salesStatusRes.data.data,
 			});
 			console.log(
-				"seven days sale",
-				sevendayssales.data.data
+				"yearly customer regestration",
+				yearlycustomerRes.data.data
 			);
 			setsevendayssales(sevendayssales.data.data);
 		} catch (error) {
@@ -217,6 +255,16 @@ function Dashboard() {
 					/>
 				</LineChart>
 			</div>
+			<h1>Choose your month</h1>
+			<input
+				type="range"
+				min={1}
+				max={12}
+				value={months}
+				onChange={(e) => setMonths(e.target.value)}
+				className="w-[45%] h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-blue-700"
+			/>
+			<span className="mx-5">{months}</span>
 
 			{/* Monthly Product Analysis */}
 			<div className="bg-white p-6 rounded-lg shadow mb-8">
@@ -230,6 +278,47 @@ function Dashboard() {
 				>
 					<CartesianGrid strokeDasharray="3 3" />
 					<XAxis dataKey="day" />
+					<YAxis />
+					<Tooltip />
+					<Legend />
+					<Bar dataKey="count" fill="#8884d8" />
+				</BarChart>
+			</div>
+			<div className="bg-white p-6 rounded-lg shadow mb-8">
+				<h2 className="text-xl font-semibold mb-4">
+					Monthly Customer Regestration
+				</h2>
+				<BarChart
+					width={800}
+					height={300}
+					data={monthlyStats.customer}
+				>
+					<CartesianGrid strokeDasharray="3 3" />
+					<XAxis dataKey="day" />
+					<YAxis />
+					<Tooltip />
+					<Legend />
+					<Bar dataKey="count" fill="#8884d8" />
+				</BarChart>
+			</div>
+			<h1>Set Years</h1>
+			<input
+				type="number"
+				value={year}
+				onChange={(e) => setYear(e.target.value)}
+				className="p-4 "
+			/>
+			<div className="bg-white p-6 rounded-lg shadow mb-8">
+				<h2 className="text-xl font-semibold mb-4">
+					Yearly Customer Regestration
+				</h2>
+				<BarChart
+					width={800}
+					height={300}
+					data={monthlyStats.customeryear}
+				>
+					<CartesianGrid strokeDasharray="3 3" />
+					<XAxis dataKey="month" />
 					<YAxis />
 					<Tooltip />
 					<Legend />
@@ -285,6 +374,66 @@ function Dashboard() {
 					/>
 				</LineChart>
 			</div>
+			{/* sales monthly */}
+			<div className="bg-white p-6 rounded-lg shadow mb-8 flex justify-center">
+				<h2 className="text-xl font-semibold mb-4">
+					Last Monthly Sales
+				</h2>
+				<LineChart
+					width={800}
+					height={300}
+					data={monthlyStats.salesmonthlyRes}
+				>
+					<CartesianGrid strokeDasharray="3 3" />
+					<XAxis dataKey="day" />
+					<YAxis dataKey="bookings" />
+					<Tooltip />
+					<Legend />
+					<Line
+						type="monotone"
+						dataKey="revenue"
+						stroke="#8884d8"
+					/>
+					<Line
+						type="monotone"
+						dataKey="bookings"
+						stroke="#82ca9d"
+					/>
+				</LineChart>
+			</div>
+
+			{/* sales yearly */}
+			<div className="bg-white p-6 rounded-lg shadow mb-8 flex justify-center">
+				<h2 className="text-xl font-semibold mb-4">
+					Last Monthly Sales
+				</h2>
+				<BarChart
+					width={800}
+					height={300}
+					data={monthlyStats.salesyearlyRes}
+				>
+					<CartesianGrid strokeDasharray="3 3" />
+					<XAxis dataKey="month" />
+					<YAxis dataKey="bookings" />
+					<Tooltip />
+					<Legend />
+					<Line
+						type="monotone"
+						dataKey="revenue"
+						stroke="#8884d8"
+					/>
+					<Line
+						type="monotone"
+						dataKey="bookings"
+						stroke="#82ca9d"
+					/>
+				</BarChart>
+			</div>
+			<SellerRegistrationAnalysis
+				monthlyStats={
+					monthlyStats.sellerRegistrationsmonthly
+				}
+			/>
 
 			{/* seller analytics */}
 			<table class="table-auto border-collapse border border-gray-300 w-full text-sm text-left">
@@ -330,5 +479,75 @@ function Dashboard() {
 		</div>
 	);
 }
+
+const SellerRegistrationAnalysis = ({ monthlyStats }) => {
+	const sellerRegistrations =
+		monthlyStats?.sellerRegistrationsyearly?.data || [];
+
+	return (
+		<div className="bg-white p-6 rounded-lg shadow mb-8 flex flex-col items-center">
+			<h2 className="text-xl font-semibold mb-4">
+				Seller Registration Monthly Analysis
+			</h2>
+
+			{sellerRegistrations.length > 0 ? (
+				<div className="w-full overflow-x-auto">
+					<table className="min-w-full bg-white border border-gray-200">
+						<thead>
+							<tr>
+								<th className="py-2 px-4 border-b">
+									Month
+								</th>
+								<th className="py-2 px-4 border-b">
+									Total Registrations
+								</th>
+								<th className="py-2 px-4 border-b">
+									Approved
+								</th>
+								<th className="py-2 px-4 border-b">
+									Pending
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							{sellerRegistrations.map(
+								(monthData, index) => (
+									<tr key={index} className="text-center">
+										<td className="py-2 px-4 border-b">
+											{new Date(
+												2025,
+												monthData.month - 1
+											).toLocaleString("default", {
+												month: "long",
+											})}
+										</td>
+										<td className="py-2 px-4 border-b">
+											{monthData.total}
+										</td>
+										<td className="py-2 px-4 border-b">
+											{monthData.statuses.find(
+												(s) => s.status === "Approved"
+											)?.count || 0}
+										</td>
+										<td className="py-2 px-4 border-b">
+											{monthData.statuses.find(
+												(s) => s.status === "Pending"
+											)?.count || 0}
+										</td>
+									</tr>
+								)
+							)}
+						</tbody>
+					</table>
+				</div>
+			) : (
+				<p className="text-gray-500">
+					No seller registration data available for this
+					year.
+				</p>
+			)}
+		</div>
+	);
+};
 
 export default Dashboard;
