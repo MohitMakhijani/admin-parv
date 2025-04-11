@@ -32,6 +32,7 @@ function Dashboard() {
 		products: 0,
 		salesStatus: [],
 	});
+	const [sevendayssales, setsevendayssales] = useState([]);
 
 	useEffect(() => {
 		fetchDashboardData();
@@ -51,6 +52,7 @@ function Dashboard() {
 				monthlyProductRes,
 				totalProductRes,
 				salesStatusRes,
+				sevendayssales,
 			] = await Promise.all([
 				axios.get("/admin/nastrigo/sellers-analytics"),
 				axios.get(
@@ -74,6 +76,9 @@ function Dashboard() {
 					"/admin/nastrigo/get-total-product-count"
 				),
 				axios.get("/admin/nastrigo/get-total-sales-status"),
+				axios.get(
+					"/admin/nastrigo/get-last-7-days-sales-analysis"
+				),
 			]);
 			// console.log(analyticsRes.data.data);
 			setAnalytics(analyticsRes.data.data);
@@ -96,6 +101,11 @@ function Dashboard() {
 				products: totalProductRes.data.data.count,
 				salesStatus: salesStatusRes.data.data,
 			});
+			console.log(
+				"seven days sale",
+				sevendayssales.data.data
+			);
+			setsevendayssales(sevendayssales.data.data);
 		} catch (error) {
 			console.error(
 				"Error fetching dashboard data:",
@@ -183,7 +193,7 @@ function Dashboard() {
 			{/* Sales Chart */}
 			<div className="bg-white p-6 rounded-lg shadow mb-8">
 				<h2 className="text-xl font-semibold mb-4">
-					Last 7 Days Sales
+					Last 7 Days Demand
 				</h2>
 				<LineChart
 					width={800}
@@ -247,6 +257,33 @@ function Dashboard() {
 						</div>
 					))}
 				</div>
+			</div>
+
+			<div className="bg-white p-6 rounded-lg shadow mb-8 flex justify-center">
+				<h2 className="text-xl font-semibold mb-4">
+					Last 7 Days Sales
+				</h2>
+				<LineChart
+					width={800}
+					height={300}
+					data={sevendayssales}
+				>
+					<CartesianGrid strokeDasharray="3 3" />
+					<XAxis dataKey="date" />
+					<YAxis dataKey="count" />
+					<Tooltip />
+					<Legend />
+					<Line
+						type="monotone"
+						dataKey="revenue"
+						stroke="#8884d8"
+					/>
+					<Line
+						type="monotone"
+						dataKey="count"
+						stroke="#82ca9d"
+					/>
+				</LineChart>
 			</div>
 
 			{/* seller analytics */}
