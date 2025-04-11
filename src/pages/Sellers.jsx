@@ -4,6 +4,10 @@ import { set } from "react-hook-form";
 
 function Sellers() {
 	const [sellers, setSellers] = useState([]);
+	const [
+		todaysSellerRegestration,
+		setTodaysSellerRegestration,
+	] = useState([]);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
@@ -11,6 +15,7 @@ function Sellers() {
 
 	useEffect(() => {
 		fetchSellers();
+		todaySellerRegestration();
 	}, [currentPage, selectedCity]);
 
 	const fetchSellers = async () => {
@@ -34,20 +39,16 @@ function Sellers() {
 			console.error("Error fetching sellers:", error);
 		}
 	};
-
-	const handleSearch = () => {
-		// const term = event.target.value.toLowerCase();
-		const term = searchTerm.toLowerCase();
-		if (searchTerm === "") {
-			setSellers(sellers); // sellersData should contain your full list of sellers
-			return;
+	const todaySellerRegestration = async () => {
+		try {
+			const response = await axios.get(
+				"/admin/nastrigo/get-todays-seller-registrations"
+			);
+			console.log(response.data);
+			setTodaysSellerRegestration(response.data.data);
+		} catch (error) {
+			console.error("Error fetching sellers:", error);
 		}
-		// setSearchTerm(term);
-
-		const filteredSellers = sellers.filter((seller) =>
-			seller.fullName.toLowerCase().includes(term)
-		);
-		setSellers(filteredSellers);
 	};
 
 	const toggleSellerStatus = async (sellerId, isActive) => {
@@ -68,7 +69,15 @@ function Sellers() {
 			<h1 className="text-3xl font-bold mb-6">
 				Sellers Management
 			</h1>
-
+			<h1>Todays Seller Regestration</h1>
+			<div>
+				{todaysSellerRegestration.map((i) => (
+					<div>
+						<p>{i.count}</p>
+						<p>{i.status}</p>
+					</div>
+				))}
+			</div>
 			{/* Search and Filter */}
 			<div className="mb-6 flex gap-4">
 				<div className="flex-1">
@@ -81,7 +90,7 @@ function Sellers() {
 					/>
 				</div>
 				<button
-					onClick={handleSearch}
+					// onClick={handleSearch}
 					className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
 				>
 					Search
@@ -150,7 +159,7 @@ function Sellers() {
 									{seller.city}
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
-									{seller.ProductRating.toFixed(1)}
+									{seller.ProductRating.toFixed(2)}
 								</td>
 								<td className="px-6 py-4 whitespace-nowrap">
 									${seller.totalRevenue.toLocaleString()}
