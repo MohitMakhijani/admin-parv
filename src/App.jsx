@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
 	BrowserRouter as Router,
 	Routes,
@@ -16,6 +16,7 @@ import Login from "./pages/Login";
 import SellerDetail from "./pages/SellerDetail";
 import ProductList from "./pages/ProductList";
 import SeasonsComponent from "./pages/Seasons";
+import Category from "./pages/Category";
 
 // Configure axios defaults
 axios.defaults.baseURL = "http://localhost:8000/api/v1";
@@ -30,6 +31,31 @@ axios.interceptors.request.use((config) => {
 });
 
 function App() {
+	const refreshAccessToken = async () => {
+		try {
+			const res = await axios.post(
+				`admin/nastrigo/refresh-token`
+			);
+			if (res) {
+				localStorage.setItem(
+					"token",
+					res.data.data.accessToken
+				);
+				console.log("access token refreshed successfully");
+			}
+		} catch (error) {
+			console.log(
+				"error in refreshing access token",
+				error
+			);
+		}
+	};
+	useEffect(() => {
+		if (localStorage.getItem("refreshToken")) {
+			refreshAccessToken();
+		}
+	}, []);
+
 	return (
 		<Router>
 			<div className="flex h-screen bg-gray-100">
@@ -90,6 +116,14 @@ function App() {
 							element={
 								<LoggedInRoutes>
 									<Banners />
+								</LoggedInRoutes>
+							}
+						/>
+						<Route
+							path="/category"
+							element={
+								<LoggedInRoutes>
+									<Category />
 								</LoggedInRoutes>
 							}
 						/>

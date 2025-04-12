@@ -225,9 +225,7 @@ function Sellers() {
 												: "bg-red-100 text-red-800 hover:bg-red-200"
 										} transition`}
 									>
-										{seller.isActive
-											? "Active"
-											: "Inactive"}
+										{seller.isActive ? "Active" : "Disable"}
 									</button>
 								</td>
 								<td

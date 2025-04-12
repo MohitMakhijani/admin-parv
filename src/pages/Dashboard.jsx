@@ -110,7 +110,10 @@ function Dashboard() {
 					`/admin/nastrigo/get-seller-registration-analysis?year=${year}`
 				),
 			]);
-			// console.log(analyticsRes.data.data);
+			console.log(
+				"seller monthy=",
+				sellerRegistrationsmonthly.data.data
+			);
 			setAnalytics(analyticsRes.data.data);
 			setSalesData(salesRes.data.data);
 			setTotalRevenue(revenueRes.data.data.total);
@@ -151,6 +154,46 @@ function Dashboard() {
 			);
 		}
 	};
+	const formattedData =
+		monthlyStats.sellerRegistrationsmonthly.map((item) => {
+			let approved = 0;
+			let pending = 0;
+
+			item.statuses.forEach((statusObj) => {
+				if (statusObj.status === "Approved") {
+					approved = statusObj.count;
+				}
+				if (statusObj.status === "Pending") {
+					pending = statusObj.count;
+				}
+			});
+
+			return {
+				day: item.day,
+				approved,
+				pending,
+			};
+		});
+	const formattedData1 =
+		monthlyStats.sellerRegistrationsyearly.map((item) => {
+			let approved = 0;
+			let pending = 0;
+
+			item.statuses.forEach((statusObj) => {
+				if (statusObj.status === "Approved") {
+					approved = statusObj.count;
+				}
+				if (statusObj.status === "Pending") {
+					pending = statusObj.count;
+				}
+			});
+
+			return {
+				day: item.day,
+				approved,
+				pending,
+			};
+		});
 
 	return (
 		<div className="p-6">
@@ -240,7 +283,7 @@ function Dashboard() {
 				>
 					<CartesianGrid strokeDasharray="3 3" />
 					<XAxis dataKey="date" />
-					<YAxis />
+					<YAxis dataKey={salesData} />
 					<Tooltip />
 					<Legend />
 					<Line
@@ -429,11 +472,59 @@ function Dashboard() {
 					/>
 				</BarChart>
 			</div>
-			<SellerRegistrationAnalysis
+			{/* <SellerRegistrationAnalysis
 				monthlyStats={
 					monthlyStats.sellerRegistrationsmonthly
 				}
-			/>
+			/> */}
+			<LineChart
+				width={800}
+				height={300}
+				data={formattedData}
+				className="mt-8"
+			>
+				<CartesianGrid strokeDasharray="3 3" />
+				<XAxis dataKey="day" />
+				<YAxis />
+				<Tooltip />
+				<Legend />
+				<Line
+					type="monotone"
+					dataKey="approved"
+					stroke="#4CAF50" // Green for approved
+					name="Approved"
+				/>
+				<Line
+					type="monotone"
+					dataKey="pending"
+					stroke="red" // Orange for pending
+					name="Pending"
+				/>
+			</LineChart>
+			<LineChart
+				width={800}
+				height={300}
+				data={formattedData1}
+				className="mt-8"
+			>
+				<CartesianGrid strokeDasharray="3 3" />
+				<XAxis dataKey="date" />
+				<YAxis />
+				<Tooltip />
+				<Legend />
+				<Line
+					type="monotone"
+					dataKey="approved"
+					stroke="#4CAF50" // Green for approved
+					name="Approved"
+				/>
+				<Line
+					type="monotone"
+					dataKey="pending"
+					stroke="red" // Orange for pending
+					name="Pending"
+				/>
+			</LineChart>
 
 			{/* seller analytics */}
 			<table class="table-auto border-collapse border border-gray-300 w-full text-sm text-left">
@@ -479,75 +570,5 @@ function Dashboard() {
 		</div>
 	);
 }
-
-const SellerRegistrationAnalysis = ({ monthlyStats }) => {
-	const sellerRegistrations =
-		monthlyStats?.sellerRegistrationsyearly?.data || [];
-
-	return (
-		<div className="bg-white p-6 rounded-lg shadow mb-8 flex flex-col items-center">
-			<h2 className="text-xl font-semibold mb-4">
-				Seller Registration Monthly Analysis
-			</h2>
-
-			{sellerRegistrations.length > 0 ? (
-				<div className="w-full overflow-x-auto">
-					<table className="min-w-full bg-white border border-gray-200">
-						<thead>
-							<tr>
-								<th className="py-2 px-4 border-b">
-									Month
-								</th>
-								<th className="py-2 px-4 border-b">
-									Total Registrations
-								</th>
-								<th className="py-2 px-4 border-b">
-									Approved
-								</th>
-								<th className="py-2 px-4 border-b">
-									Pending
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							{sellerRegistrations.map(
-								(monthData, index) => (
-									<tr key={index} className="text-center">
-										<td className="py-2 px-4 border-b">
-											{new Date(
-												2025,
-												monthData.month - 1
-											).toLocaleString("default", {
-												month: "long",
-											})}
-										</td>
-										<td className="py-2 px-4 border-b">
-											{monthData.total}
-										</td>
-										<td className="py-2 px-4 border-b">
-											{monthData.statuses.find(
-												(s) => s.status === "Approved"
-											)?.count || 0}
-										</td>
-										<td className="py-2 px-4 border-b">
-											{monthData.statuses.find(
-												(s) => s.status === "Pending"
-											)?.count || 0}
-										</td>
-									</tr>
-								)
-							)}
-						</tbody>
-					</table>
-				</div>
-			) : (
-				<p className="text-gray-500">
-					No seller registration data available for this
-					year.
-				</p>
-			)}
-		</div>
-	);
-};
 
 export default Dashboard;

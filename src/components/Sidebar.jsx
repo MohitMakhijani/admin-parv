@@ -7,6 +7,7 @@ import {
 	HeadphonesIcon,
 	Store,
 	Sun,
+	Cat,
 } from "lucide-react";
 
 function Sidebar() {
@@ -31,6 +32,7 @@ function Sidebar() {
 			label: "Support",
 		},
 		{ path: "/seasons", icon: Sun, label: "Seasons" },
+		{ path: "/category", icon: Cat, label: "Category" },
 	];
 
 	return (
