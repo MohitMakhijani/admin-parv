@@ -16,7 +16,7 @@ function Dashboard() {
 	const [analytics, setAnalytics] = useState(null);
 	const [salesData, setSalesData] = useState([]);
 	const [totalRevenue, setTotalRevenue] = useState(0);
-	const [months, setMonths] = useState(1);
+	const [months, setMonths] = useState(4);
 	const [todayStats, setTodayStats] = useState({
 		demands: 0,
 		products: 0,
@@ -38,7 +38,7 @@ function Dashboard() {
 		salesStatus: [],
 	});
 	const [sevendayssales, setsevendayssales] = useState([]);
-	const [year, setYear] = useState(2000);
+	const [year, setYear] = useState(2025);
 
 	useEffect(() => {
 		fetchDashboardData();
@@ -198,7 +198,6 @@ function Dashboard() {
 	return (
 		<div className="p-6">
 			<h1 className="text-3xl font-bold mb-6">Dashboard</h1>
-
 			{/* Today's Stats */}
 			<div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
 				<div className="bg-white p-6 rounded-lg shadow">
@@ -234,7 +233,6 @@ function Dashboard() {
 					</p>
 				</div>
 			</div>
-
 			{/* Seller Stats */}
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 				<div className="bg-white p-6 rounded-lg shadow">
@@ -270,7 +268,6 @@ function Dashboard() {
 					</p>
 				</div>
 			</div>
-
 			{/* Sales Chart */}
 			<div className="bg-white p-6 rounded-lg shadow mb-8">
 				<h2 className="text-xl font-semibold mb-4">
@@ -308,7 +305,6 @@ function Dashboard() {
 				className="w-[45%] h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-blue-700"
 			/>
 			<span className="mx-5">{months}</span>
-
 			{/* Monthly Product Analysis */}
 			<div className="bg-white p-6 rounded-lg shadow mb-8">
 				<h2 className="text-xl font-semibold mb-4">
@@ -353,22 +349,32 @@ function Dashboard() {
 			/>
 			<div className="bg-white p-6 rounded-lg shadow mb-8">
 				<h2 className="text-xl font-semibold mb-4">
-					Yearly Customer Regestration
+					Yearly Customer Registration
 				</h2>
-				<BarChart
-					width={800}
+				<LineChart
+					width={500}
 					height={300}
 					data={monthlyStats.customeryear}
+					margin={{
+						top: 5,
+						right: 30,
+						left: 20,
+						bottom: 5,
+					}}
 				>
 					<CartesianGrid strokeDasharray="3 3" />
 					<XAxis dataKey="month" />
 					<YAxis />
 					<Tooltip />
 					<Legend />
-					<Bar dataKey="count" fill="#8884d8" />
-				</BarChart>
+					<Line
+						type="monotone"
+						dataKey="count"
+						stroke="#8884d8"
+						activeDot={{ r: 8 }}
+					/>
+				</LineChart>
 			</div>
-
 			{/* Sales Status */}
 			<div className="bg-white p-6 rounded-lg shadow">
 				<h2 className="text-xl font-semibold mb-4">
@@ -390,7 +396,6 @@ function Dashboard() {
 					))}
 				</div>
 			</div>
-
 			<div className="bg-white p-6 rounded-lg shadow mb-8 flex justify-center">
 				<h2 className="text-xl font-semibold mb-4">
 					Last 7 Days Sales
@@ -444,7 +449,6 @@ function Dashboard() {
 					/>
 				</LineChart>
 			</div>
-
 			{/* sales yearly */}
 			<div className="bg-white p-6 rounded-lg shadow mb-8 flex justify-center">
 				<h2 className="text-xl font-semibold mb-4">
@@ -525,48 +529,7 @@ function Dashboard() {
 					name="Pending"
 				/>
 			</LineChart>
-
 			{/* seller analytics */}
-			<table class="table-auto border-collapse border border-gray-300 w-full text-sm text-left">
-				<thead>
-					<tr class="bg-gray-100">
-						<th class="border border-gray-300 p-2">
-							Email
-						</th>
-						<th class="border border-gray-300 p-2">
-							Full Name
-						</th>
-						<th class="border border-gray-300 p-2">
-							Avatar
-						</th>
-						<th class="border border-gray-300 p-2">
-							Phone Number
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					{analytics?.activeSellers?.map((seller) => (
-						<tr key={seller.email} class="hover:bg-gray-50">
-							<td class="border border-gray-300 p-2">
-								{seller.email}
-							</td>
-							<td class="border border-gray-300 p-2">
-								{seller.fullName}
-							</td>
-							<td class="border border-gray-300 p-2">
-								<img
-									class="h-10 w-10 rounded-full"
-									src={seller.avatar}
-									alt="Seller Avatar"
-								/>
-							</td>
-							<td class="border border-gray-300 p-2">
-								{seller.phoneNo}
-							</td>
-						</tr>
-					))}
-				</tbody>
-			</table>
 		</div>
 	);
 }

@@ -208,203 +208,137 @@ function Category() {
 			<div className="max-w-3xl mx-auto bg-white rounded-lg shadow overflow-hidden">
 				<ul className="divide-y divide-gray-200">
 					{categories?.map((category) => (
-						<li key={category._id} className="p-6">
-							<div className="flex items-center justify-between">
-								<div className="flex items-center space-x-4">
-									{category.image && (
-										<img
-											src={category.image}
-											alt={category.name}
-											className="w-12 h-12 rounded-lg object-cover"
-										/>
-									)}
-
-									{editingId === category._id ? (
-										<div className="flex items-center gap-2">
-											<input
-												type="text"
-												value={editName}
-												onChange={(e) =>
-													setEditName(e.target.value)
-												}
-												className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-											/>
-											<button
-												onClick={() =>
-													handleUpdateName(category._id)
-												}
-												className="text-green-600 hover:text-green-700"
-											>
-												Save
-											</button>
-											<button
-												onClick={() => {
-													setEditingId(null);
-													setEditName("");
-												}}
-												className="text-gray-600 hover:text-gray-700"
-											>
-												Cancel
-											</button>
-										</div>
-									) : (
-										<span className="text-lg font-medium text-gray-900">
-											{category.name}
-										</span>
-									)}
-								</div>
-
-								<div className="flex items-center space-x-4">
-									<label className="cursor-pointer text-indigo-600 hover:text-indigo-700">
-										<ImageIcon className="w-5 h-5" />
-										<input
-											type="file"
-											className="hidden"
-											onChange={(e) =>
-												handleUpdateImage(
-													category._id,
-													e.target.files[0]
-												)
-											}
-											accept="image/*"
-										/>
-									</label>
-
-									<button
-										onClick={() => {
-											setEditingId(category._id);
-											setEditName(category.name);
-										}}
-										className="text-blue-600 hover:text-blue-700"
-									>
-										<Edit className="w-5 h-5" />
-									</button>
-
-									<button
-										onClick={() =>
-											handleDeleteCategory(category._id)
-										}
-										className="text-red-600 hover:text-red-700"
-									>
-										<Trash2 className="w-5 h-5" />
-									</button>
-								</div>
-							</div>
-
-							{category.children?.length > 0 && (
-								<div className="mt-2 text-sm text-gray-500">
-									Subcategories: {category.children.length}
-									<ul className="divide-y divide-gray-200">
-										{category.children?.map(
-											(subcategory) => (
-												<li
-													key={subcategory._id}
-													className="p-6"
-												>
-													<div className="flex items-center justify-between">
-														<div className="flex items-center space-x-4">
-															{subcategory.image && (
-																<img
-																	src={subcategory.image}
-																	alt={subcategory.name}
-																	className="w-12 h-12 rounded-lg object-cover"
-																/>
-															)}
-
-															{editingId ===
-															subcategory._id ? (
-																<div className="flex items-center gap-2">
-																	<input
-																		type="text"
-																		value={editName}
-																		onChange={(e) =>
-																			setEditName(
-																				e.target.value
-																			)
-																		}
-																		className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-																	/>
-																	<button
-																		onClick={() =>
-																			handleUpdateName(
-																				subcategory._id
-																			)
-																		}
-																		className="text-green-600 hover:text-green-700"
-																	>
-																		Save
-																	</button>
-																	<button
-																		onClick={() => {
-																			setEditingId(null);
-																			setEditName("");
-																		}}
-																		className="text-gray-600 hover:text-gray-700"
-																	>
-																		Cancel
-																	</button>
-																</div>
-															) : (
-																<span className="text-lg font-medium text-gray-900">
-																	{subcategory.name}
-																</span>
-															)}
-														</div>
-
-														<div className="flex items-center space-x-4">
-															<label className="cursor-pointer text-indigo-600 hover:text-indigo-700">
-																<ImageIcon className="w-5 h-5" />
-																<input
-																	type="file"
-																	className="hidden"
-																	onChange={(e) =>
-																		handleUpdateImage(
-																			subcategory._id,
-																			e.target.files[0]
-																		)
-																	}
-																	accept="image/*"
-																/>
-															</label>
-
-															<button
-																onClick={() => {
-																	setEditingId(
-																		subcategory._id
-																	);
-																	setEditName(
-																		subcategory.name
-																	);
-																}}
-																className="text-blue-600 hover:text-blue-700"
-															>
-																<Edit className="w-5 h-5" />
-															</button>
-
-															<button
-																onClick={() =>
-																	handleDeleteCategory(
-																		subcategory._id
-																	)
-																}
-																className="text-red-600 hover:text-red-700"
-															>
-																<Trash2 className="w-5 h-5" />
-															</button>
-														</div>
-													</div>
-												</li>
-											)
-										)}
-									</ul>
-								</div>
-							)}
-						</li>
+						<CategoryItem
+							key={category._id}
+							category={category}
+							handleUpdateName={handleUpdateName}
+							handleUpdateImage={handleUpdateImage}
+							handleDeleteCategory={handleDeleteCategory}
+							setEditingId={setEditingId}
+							editingId={editingId}
+							editName={editName}
+							setEditName={setEditName}
+						/>
 					))}
 				</ul>
 			</div>
 		</div>
 	);
 }
+const CategoryItem = ({
+	category,
+	handleUpdateName,
+	handleUpdateImage,
+	handleDeleteCategory,
+	setEditingId,
+	editingId,
+	editName,
+	setEditName,
+}) => {
+	return (
+		<li key={category._id} className="p-6">
+			<div className="flex items-center justify-between">
+				<div className="flex items-center space-x-4">
+					{category.image && (
+						<img
+							src={category.image}
+							alt={category.name}
+							className="w-12 h-12 rounded-lg object-cover"
+						/>
+					)}
+					{editingId === category._id ? (
+						<div className="flex items-center gap-2">
+							<input
+								type="text"
+								value={editName}
+								onChange={(e) =>
+									setEditName(e.target.value)
+								}
+								className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+							/>
+							<button
+								onClick={() =>
+									handleUpdateName(category._id)
+								}
+								className="text-green-600 hover:text-green-700"
+							>
+								Save
+							</button>
+							<button
+								onClick={() => {
+									setEditingId(null);
+									setEditName("");
+								}}
+								className="text-gray-600 hover:text-gray-700"
+							>
+								Cancel
+							</button>
+						</div>
+					) : (
+						<span className="text-lg font-medium text-gray-900">
+							{category.name}
+						</span>
+					)}
+				</div>
+
+				<div className="flex items-center space-x-4">
+					<label className="cursor-pointer text-indigo-600 hover:text-indigo-700">
+						<ImageIcon className="w-5 h-5" />
+						<input
+							type="file"
+							className="hidden"
+							onChange={(e) =>
+								handleUpdateImage(
+									category._id,
+									e.target.files[0]
+								)
+							}
+							accept="image/*"
+						/>
+					</label>
+
+					<button
+						onClick={() => {
+							setEditingId(category._id);
+							setEditName(category.name);
+						}}
+						className="text-blue-600 hover:text-blue-700"
+					>
+						<Edit className="w-5 h-5" />
+					</button>
+
+					<button
+						onClick={() =>
+							handleDeleteCategory(category._id)
+						}
+						className="text-red-600 hover:text-red-700"
+					>
+						<Trash2 className="w-5 h-5" />
+					</button>
+				</div>
+			</div>
+
+			{/* Render children if any */}
+			{category.children &&
+				category.children.length > 0 && (
+					<ul className="ml-6 mt-4 border-l-2 border-gray-200">
+						{category.children.map((child) => (
+							<CategoryItem
+								key={child._id}
+								category={child}
+								handleUpdateName={handleUpdateName}
+								handleUpdateImage={handleUpdateImage}
+								handleDeleteCategory={handleDeleteCategory}
+								setEditingId={setEditingId}
+								editingId={editingId}
+								editName={editName}
+								setEditName={setEditName}
+							/>
+						))}
+					</ul>
+				)}
+		</li>
+	);
+};
 
 export default Category;
