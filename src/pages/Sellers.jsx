@@ -56,7 +56,7 @@ function Sellers() {
 	const fetchDisabledSellers = async () => {
 		try {
 			const response = await axios.get(
-				"/admin/nastrigo/get-disabled-sellers"
+				"/admin/nastrigo/get-disabled-sellers?limit=100000"
 			);
 			console.log(
 				" disabled seller list=",

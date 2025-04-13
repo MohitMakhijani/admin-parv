@@ -39,13 +39,13 @@ function Customer() {
 	const fetchDisabledcustomer = async () => {
 		try {
 			const response = await axios.get(
-				"/admin/nastrigo/get-ban-customers"
+				"/admin/nastrigo/get-ban-customers?limit=100000"
 			);
 			console.log(
 				" disabled seller list=",
 				response.data.data
 			);
-			setDisabledcustomer(response.data.data);
+			setDisabledcustomer(response.data.data.customers);
 		} catch (error) {
 			console.error("Error fetching customer:", error);
 		}
@@ -114,7 +114,7 @@ function Customer() {
 								"Total Exchanged Items",
 								"Total pending Booking",
 								"Total Purchased Items",
-							].map((heading) => (
+							]?.map((heading) => (
 								<th
 									key={heading}
 									className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -126,7 +126,7 @@ function Customer() {
 					</thead>
 
 					<tbody className="divide-y divide-gray-200">
-						{customer.map((seller) => (
+						{customer?.map((seller) => (
 							<tr
 								key={seller._id}
 								className="hover:bg-gray-100 transition cursor-pointer"
@@ -191,7 +191,7 @@ function Customer() {
 												: "bg-red-100 text-red-800 hover:bg-red-200"
 										} transition`}
 									>
-										{seller.isActive ? "Active" : "Disable"}
+										Disable
 									</button>
 								</td>
 							</tr>
@@ -216,7 +216,7 @@ function Customer() {
 						</tr>
 					</thead>
 					<tbody className="divide-y divide-gray-200">
-						{disabledcustomer.map((seller) => (
+						{disabledcustomer?.map((seller) => (
 							<tr key={seller._id}>
 								<td className="px-6 py-4 whitespace-nowrap">
 									<div className="flex items-center">
