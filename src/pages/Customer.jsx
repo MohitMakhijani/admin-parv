@@ -15,8 +15,7 @@ function Customer() {
 	const navigate = useNavigate();
 	useEffect(() => {
 		fetchcustomer();
-		// todaySellerRegestration();
-		// fetchDisabledcustomer();
+		fetchDisabledcustomer();
 	}, [currentPage]);
 
 	const fetchcustomer = async () => {
@@ -37,59 +36,47 @@ function Customer() {
 			console.error("Error fetching customer:", error);
 		}
 	};
-	// const fetchDisabledcustomer = async () => {
-	// 	try {
-	// 		const response = await axios.get(
-	// 			"/admin/nastrigo/get-disabled-customer"
-	// 		);
-	// 		console.log(
-	// 			" disabled seller list=",
-	// 			response.data.data
-	// 		);
-	// 		setDisabledcustomer(response.data.data);
-	// 	} catch (error) {
-	// 		console.error("Error fetching customer:", error);
-	// 	}
-	// };
+	const fetchDisabledcustomer = async () => {
+		try {
+			const response = await axios.get(
+				"/admin/nastrigo/get-ban-customers"
+			);
+			console.log(
+				" disabled seller list=",
+				response.data.data
+			);
+			setDisabledcustomer(response.data.data);
+		} catch (error) {
+			console.error("Error fetching customer:", error);
+		}
+	};
 
-	// const todaySellerRegestration = async () => {
-	// 	try {
-	// 		const response = await axios.get(
-	// 			"/admin/nastrigo/get-todays-seller-registrations"
-	// 		);
-	// 		console.log(response.data);
-	// 		setTodaysSellerRegestration(response.data.data);
-	// 	} catch (error) {
-	// 		console.error("Error fetching customer:", error);
-	// 	}
-	// };
+	const togglecustomertatus = async (sellerId) => {
+		try {
+			const endpoint = `/admin/nastrigo/ban-customer/${sellerId}`;
 
-	// const togglecustomertatus = async (sellerId) => {
-	// 	try {
-	// 		const endpoint = `/admin/nastrigo/disable/${sellerId}`;
+			await axios.put(endpoint);
+			fetchcustomer();
+		} catch (error) {
+			console.error(
+				"Error Disabling seller status:",
+				error
+			);
+		}
+	};
+	const toggleActivecustomertatus = async (sellerId) => {
+		try {
+			const endpoint = `/admin/nastrigo/activate-customer/${sellerId}`;
 
-	// 		await axios.put(endpoint);
-	// 		fetchcustomer();
-	// 	} catch (error) {
-	// 		console.error(
-	// 			"Error Disabling seller status:",
-	// 			error
-	// 		);
-	// 	}
-	// };
-	// const toggleActivecustomertatus = async (sellerId) => {
-	// 	try {
-	// 		const endpoint = `/admin/nastrigo/activate/${sellerId}`;
-
-	// 		await axios.put(endpoint);
-	// 		fetchcustomer();
-	// 	} catch (error) {
-	// 		console.error(
-	// 			"Error activating seller status:",
-	// 			error
-	// 		);
-	// 	}
-	// };
+			await axios.put(endpoint);
+			fetchcustomer();
+		} catch (error) {
+			console.error(
+				"Error activating seller status:",
+				error
+			);
+		}
+	};
 
 	return (
 		<div className="p-6">
@@ -184,12 +171,28 @@ function Customer() {
 										</div>
 									</div>
 								</td>
+
 								<td className="px-6 py-4 whitespace-nowrap">
 									<div className="flex items-center">
 										<div className="font-medium text-gray-900">
 											{seller.totalPurchasedItems}
 										</div>
 									</div>
+								</td>
+								<td className="px-6 py-4 whitespace-nowrap">
+									<button
+										onClick={(e) => {
+											e.stopPropagation(); // prevent row click
+											togglecustomertatus(seller._id);
+										}}
+										className={`px-3 py-1 rounded-full text-sm font-semibold ${
+											seller.isActive
+												? "bg-green-100 text-green-800 hover:bg-green-200"
+												: "bg-red-100 text-red-800 hover:bg-red-200"
+										} transition`}
+									>
+										{seller.isActive ? "Active" : "Disable"}
+									</button>
 								</td>
 							</tr>
 						))}
@@ -198,7 +201,7 @@ function Customer() {
 			</div>
 
 			{/* Disabled Seller List */}
-			{/* <h1>Disabled customer List</h1>
+			<h1>Disabled customer List</h1>
 			<div className="bg-white rounded-lg shadow overflow-hidden">
 				<table className="min-w-full">
 					<thead>
@@ -229,11 +232,23 @@ function Customer() {
 										</div>
 									</div>
 								</td>
+								<td className="px-6 py-4 whitespace-nowrap">
+									<button
+										onClick={() =>
+											toggleActivecustomertatus(seller._id)
+										}
+										className={`px-3 py-1 rounded-full text-sm
+										text-green-800 hover:bg-green-200"
+										`}
+									>
+										Activate
+									</button>
+								</td>
 							</tr>
 						))}
 					</tbody>
 				</table>
-			</div> */}
+			</div>
 
 			{/* Pagination */}
 			<div className="mt-4 flex justify-center">
