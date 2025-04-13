@@ -8,6 +8,7 @@ import {
 	Store,
 	Sun,
 	Cat,
+	User,
 } from "lucide-react";
 
 function Sidebar() {
@@ -33,6 +34,7 @@ function Sidebar() {
 		},
 		{ path: "/seasons", icon: Sun, label: "Seasons" },
 		{ path: "/category", icon: Cat, label: "Category" },
+		{ path: "/customer", icon: User, label: "Customer" },
 	];
 
 	return (

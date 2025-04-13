@@ -17,6 +17,7 @@ import SellerDetail from "./pages/SellerDetail";
 import ProductList from "./pages/ProductList";
 import SeasonsComponent from "./pages/Seasons";
 import Category from "./pages/Category";
+import Customer from "./pages/Customer";
 
 // Configure axios defaults
 axios.defaults.baseURL = "http://localhost:8000/api/v1";
@@ -76,6 +77,14 @@ function App() {
 							element={
 								<LoggedInRoutes>
 									<Sellers />
+								</LoggedInRoutes>
+							}
+						/>
+						<Route
+							path="/customer"
+							element={
+								<LoggedInRoutes>
+									<Customer />
 								</LoggedInRoutes>
 							}
 						/>

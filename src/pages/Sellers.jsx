@@ -16,12 +16,14 @@ function Sellers() {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(1);
 	const [selectedCity, setSelectedCity] = useState("");
+	const [sort, setSort] = useState("");
+	const [order, setOrder] = useState("asc");
 	const navigate = useNavigate();
 	useEffect(() => {
 		fetchSellers();
 		todaySellerRegestration();
 		fetchDisabledSellers();
-	}, [currentPage, selectedCity]);
+	}, [currentPage, selectedCity, sort, order]);
 
 	const fetchSellers = async () => {
 		try {
@@ -33,9 +35,15 @@ function Sellers() {
 			if (selectedCity) {
 				params.city = selectedCity;
 			}
+			if (order || sort) {
+				params.orderBy = order;
+				params.sort = sort;
+			}
+			console.log("order=", order);
+			console.log("sort=", sort);
 
 			const response = await axios.get(
-				`/admin/nastrigo/seller/list?search=${searchTerm}`,
+				`/admin/nastrigo/seller/list?search=${searchTerm}&order=${order}&sortBy=${sort}`,
 				{ params }
 			);
 			console.log("seller list=", response.data.data);
@@ -131,6 +139,22 @@ function Sellers() {
 					<option value="Bulandshahr">Bulandshahr</option>
 					<option value="Katni">Katni</option>
 				</select>
+				<select
+					value={sort}
+					onChange={(e) => setSort(e.target.value)}
+					className="px-4 py-2 rounded-lg border"
+				>
+					<option value="">Rank</option>
+					<option value="reportCount">Report</option>
+				</select>
+				<select
+					value={order}
+					onChange={(e) => setOrder(e.target.value)}
+					className="px-4 py-2 rounded-lg border"
+				>
+					<option value="asc">Ascending</option>
+					<option value="desc">Descending</option>
+				</select>
 			</div>
 
 			{/* Sellers List */}
@@ -220,7 +244,7 @@ function Sellers() {
 									</button>
 								</td>
 								<td
-									className="px-6 py-4 whitespace-nowrap text-gray-700"
+									className="px-6 py-4 whitespace-nowrap text-blue-700"
 									onClick={() =>
 										navigate(`/products/${seller._id}`)
 									}
@@ -228,14 +252,14 @@ function Sellers() {
 									{seller.totalListedProducts}
 								</td>
 								<td
-									className="px-6 py-4 whitespace-nowrap text-gray-700"
+									className="px-6 py-4 whitespace-nowrap text-blue-700"
 									onClick={() =>
 										navigate(`/seller/${seller._id}`)
 									}
 								>
 									{seller.totalProductSales}
 								</td>
-								<td className="px-6 py-4 whitespace-nowrap text-gray-700">
+								<td className="px-6 py-4 whitespace-nowrap text-blue-700">
 									{seller.reportCount}
 								</td>
 							</tr>
