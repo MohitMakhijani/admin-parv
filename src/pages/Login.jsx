@@ -72,7 +72,7 @@ const LogIn = () => {
 		<div className="min-h-screen flex items-center justify-center ">
 			<section>
 				<h1 className="text-center pb-5 text-4xl font-mono underline">
-					Quiz Mania{" "}
+					My Trands
 				</h1>
 				<form
 					onSubmit={handleSubmit(submitHandler)}

@@ -11,6 +11,16 @@ import {
 	BarChart,
 	Bar,
 } from "recharts";
+import { FaRupeeSign } from "react-icons/fa";
+
+import {
+	PieChart,
+	Pie,
+	Cell,
+	ResponsiveContainer,
+} from "recharts";
+
+const COLORS = ["#8884d8", "#82ca9d", "#ffc658"];
 
 function Dashboard() {
 	const [analytics, setAnalytics] = useState(null);
@@ -39,6 +49,7 @@ function Dashboard() {
 	});
 	const [sevendayssales, setsevendayssales] = useState([]);
 	const [year, setYear] = useState(2025);
+	const [gender, setGender] = useState();
 
 	useEffect(() => {
 		fetchDashboardData();
@@ -65,6 +76,7 @@ function Dashboard() {
 				salesyearlyRes,
 				sellerRegistrationsmonthly,
 				sellerRegistrationsyearly,
+				genderRes,
 			] = await Promise.all([
 				axios.get("/admin/nastrigo/sellers-analytics"),
 				axios.get(
@@ -109,6 +121,7 @@ function Dashboard() {
 				axios.get(
 					`/admin/nastrigo/get-seller-registration-analysis?year=${year}`
 				),
+				axios.get(`admin/nastrigo/get-gender-distribution`),
 			]);
 			console.log(
 				"seller monthy=",
@@ -125,6 +138,7 @@ function Dashboard() {
 				customerRegistrations:
 					todayCustomerRes.data.data.count,
 			});
+			setGender(genderRes.data.data);
 
 			setMonthlyStats({
 				products: monthlyProductRes.data.data,
@@ -195,6 +209,8 @@ function Dashboard() {
 			};
 		});
 
+	console.log("gender", gender);
+
 	return (
 		<div className="p-6">
 			<h1 className="text-3xl font-bold mb-6">Dashboard</h1>
@@ -255,8 +271,9 @@ function Dashboard() {
 					<h3 className="text-lg font-semibold mb-2">
 						Total Revenue
 					</h3>
-					<p className="text-3xl font-bold">
-						${totalRevenue.toLocaleString()}
+					<p className="text-3xl font-bold flex justify-center items-center">
+						<FaRupeeSign className="text-2xl font-bold" />
+						{totalRevenue.toLocaleString()}
 					</p>
 				</div>
 				<div className="bg-white p-6 rounded-lg shadow">
@@ -268,6 +285,7 @@ function Dashboard() {
 					</p>
 				</div>
 			</div>
+
 			{/* Sales Chart */}
 			<div className="bg-white p-6 rounded-lg shadow mb-8">
 				<h2 className="text-xl font-semibold mb-4">
@@ -280,7 +298,7 @@ function Dashboard() {
 				>
 					<CartesianGrid strokeDasharray="3 3" />
 					<XAxis dataKey="date" />
-					<YAxis dataKey={salesData} />
+					<YAxis />
 					<Tooltip />
 					<Legend />
 					<Line
@@ -295,16 +313,27 @@ function Dashboard() {
 					/>
 				</LineChart>
 			</div>
-			<h1>Choose your month</h1>
-			<input
-				type="range"
-				min={1}
-				max={12}
-				value={months}
-				onChange={(e) => setMonths(e.target.value)}
-				className="w-[45%] h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-blue-700"
-			/>
-			<span className="mx-5">{months}</span>
+			<div>
+				<div className="flex flex-col items-center justify-center gap-6 p-6">
+					<h1 className="text-2xl font-bold text-gray-800">
+						Choose Your Month
+					</h1>
+
+					<div className="w-full flex flex-col items-center">
+						<input
+							type="range"
+							min={1}
+							max={12}
+							value={months}
+							onChange={(e) => setMonths(e.target.value)}
+							className="w-1/2 h-3 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full appearance-none cursor-pointer"
+						/>
+						<div className="mt-4 text-lg font-semibold text-blue-700">
+							Month: {months}
+						</div>
+					</div>
+				</div>
+			</div>
 			{/* Monthly Product Analysis */}
 			<div className="bg-white p-6 rounded-lg shadow mb-8">
 				<h2 className="text-xl font-semibold mb-4">
@@ -481,6 +510,7 @@ function Dashboard() {
 					monthlyStats.sellerRegistrationsmonthly
 				}
 			/> */}
+			<h1>monthly seller regestration</h1>
 			<LineChart
 				width={800}
 				height={300}
@@ -505,6 +535,7 @@ function Dashboard() {
 					name="Pending"
 				/>
 			</LineChart>
+			<h1>Yearly seller regestration</h1>
 			<LineChart
 				width={800}
 				height={300}
@@ -512,8 +543,8 @@ function Dashboard() {
 				className="mt-8"
 			>
 				<CartesianGrid strokeDasharray="3 3" />
-				<XAxis dataKey="date" />
-				<YAxis dataKey="count" />
+				<XAxis dataKey="count" />
+				<YAxis />
 				<Tooltip />
 				<Legend />
 				<Line
@@ -529,9 +560,96 @@ function Dashboard() {
 					name="Pending"
 				/>
 			</LineChart>
+			<GenderDistribution gender={gender} />
 			{/* seller analytics */}
 		</div>
 	);
 }
 
 export default Dashboard;
+
+function GenderDistribution({ gender }) {
+	const customerData = gender?.customers?.distribution?.map(
+		(item) => ({
+			name: item.gender,
+			value: item.count,
+		})
+	);
+
+	const sellerData = gender?.sellers?.distribution?.map(
+		(item) => ({
+			name: item.gender,
+			value: item.count,
+		})
+	);
+
+	return (
+		<div className="p-6">
+			<h2 className="text-2xl font-bold text-gray-800 mb-8">
+				Gender Distribution
+			</h2>
+
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+				{/* Customers Pie Chart */}
+				<div className="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition flex flex-col items-center">
+					<h3 className="text-xl font-semibold text-gray-700 mb-6">
+						Customers
+					</h3>
+					<ResponsiveContainer width="100%" height={300}>
+						<PieChart>
+							<Pie
+								data={customerData}
+								dataKey="value"
+								nameKey="name"
+								cx="50%"
+								cy="50%"
+								outerRadius={100}
+								fill="#8884d8"
+								label
+							>
+								{customerData?.map((entry, index) => (
+									<Cell
+										key={`cell-${index}`}
+										fill={COLORS[index % COLORS.length]}
+									/>
+								))}
+							</Pie>
+							<Tooltip />
+							<Legend verticalAlign="bottom" height={36} />
+						</PieChart>
+					</ResponsiveContainer>
+				</div>
+
+				{/* Sellers Pie Chart */}
+				<div className="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition flex flex-col items-center">
+					<h3 className="text-xl font-semibold text-gray-700 mb-6">
+						Sellers
+					</h3>
+					<ResponsiveContainer width="100%" height={300}>
+						<PieChart>
+							<Pie
+								data={sellerData}
+								dataKey="value"
+								nameKey="name"
+								cx="50%"
+								cy="50%"
+								outerRadius={100}
+								fill="#82ca9d"
+								label
+							>
+								{sellerData?.map((entry, index) => (
+									<Cell
+										key={`cell-${index}`}
+										fill={COLORS[index % COLORS.length]}
+									/>
+								))}
+							</Pie>
+							<Tooltip />
+							<Legend verticalAlign="bottom" height={36} />
+						</PieChart>
+					</ResponsiveContainer>
+				</div>
+			</div>
+		</div>
+	);
+}

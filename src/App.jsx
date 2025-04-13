@@ -18,6 +18,7 @@ import ProductList from "./pages/ProductList";
 import SeasonsComponent from "./pages/Seasons";
 import Category from "./pages/Category";
 import Customer from "./pages/Customer";
+import Report from "./pages/Report";
 
 // Configure axios defaults
 axios.defaults.baseURL = "http://localhost:8000/api/v1";
@@ -109,6 +110,14 @@ function App() {
 							element={
 								<LoggedInRoutes>
 									<ProductList />
+								</LoggedInRoutes>
+							}
+						/>
+						<Route
+							path="/report/:id"
+							element={
+								<LoggedInRoutes>
+									<Report />
 								</LoggedInRoutes>
 							}
 						/>

@@ -259,7 +259,12 @@ function Sellers() {
 								>
 									{seller.totalProductSales}
 								</td>
-								<td className="px-6 py-4 whitespace-nowrap text-blue-700">
+								<td
+									className="px-6 py-4 whitespace-nowrap text-blue-700"
+									onClick={() =>
+										navigate(`/report/${seller._id}`)
+									}
+								>
 									{seller.reportCount}
 								</td>
 							</tr>

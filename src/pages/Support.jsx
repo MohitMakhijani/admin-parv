@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 function Support() {
 	const [queries, setQueries] = useState([]);
@@ -14,7 +15,7 @@ function Support() {
 			const response = await axios.get(
 				`/admin/nastrigo/SupportQuery?userType=${userType}`
 			);
-			// console.log(response.data.data);
+			console.log(response.data.data);
 			setQueries(response.data.data);
 		} catch (error) {
 			console.error(
@@ -40,6 +41,16 @@ function Support() {
 			alert("Notification sent successfully!");
 		} catch (error) {
 			console.error("Error sending notification:", error);
+		}
+	};
+	const deletequery = async ({ id }) => {
+		try {
+			await axios.delete(
+				`admin/nastrigo/delete-supportQuery/${id}`
+			);
+			toast.success("Deelted sent successfully!");
+		} catch (error) {
+			console.error("Error deleting notification:", error);
 		}
 	};
 
@@ -79,10 +90,13 @@ function Support() {
 							<div className="flex justify-between items-start">
 								<div>
 									<p className="text-sm text-gray-600">
-										From: {query.senderType}
+										From: {query.senderId.fullName}
 									</p>
 									<p className="text-sm text-gray-600">
-										ID: {query.senderId}
+										Email-ID: {query.senderId.email}
+									</p>
+									<p className="text-sm text-gray-600">
+										Phone: {query.senderId.phoneNo}
 									</p>
 									<p className="mt-2">{query.message}</p>
 								</div>
@@ -91,6 +105,14 @@ function Support() {
 										query.createdAt
 									).toLocaleDateString()}
 								</p>
+								<button
+									onClick={() =>
+										deletequery({ id: query._id })
+									}
+									className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+								>
+									Delete
+								</button>
 							</div>
 						</div>
 					))}
