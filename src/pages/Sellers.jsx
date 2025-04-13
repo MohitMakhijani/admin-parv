@@ -104,15 +104,6 @@ function Sellers() {
 			<h1 className="text-3xl font-bold mb-6">
 				Sellers Management
 			</h1>
-			<h1>Todays Seller Regestration</h1>
-			<div>
-				{todaysSellerRegestration.map((i) => (
-					<div>
-						<p>{i.count}</p>
-						<p>{i.status}</p>
-					</div>
-				))}
-			</div>
 			{/* Search and Filter */}
 			<div className="mb-6 flex gap-4">
 				<div className="flex-1">
@@ -155,8 +146,8 @@ function Sellers() {
 								"Rating",
 								"Revenue",
 								"Actions",
-								"products",
-								"sales",
+								"products (click to view)",
+								"sales (click to view)",
 								"report count",
 							].map((heading) => (
 								<th

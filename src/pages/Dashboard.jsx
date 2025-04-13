@@ -513,7 +513,7 @@ function Dashboard() {
 			>
 				<CartesianGrid strokeDasharray="3 3" />
 				<XAxis dataKey="date" />
-				<YAxis />
+				<YAxis dataKey="count" />
 				<Tooltip />
 				<Legend />
 				<Line
