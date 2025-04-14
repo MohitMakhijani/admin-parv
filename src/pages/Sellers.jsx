@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { set } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Download } from "lucide-react";
 
 function Sellers() {
 	const [sellers, setSellers] = useState([]);
@@ -102,6 +102,42 @@ function Sellers() {
 		} catch (error) {
 			console.error(
 				"Error activating seller status:",
+				error
+			);
+		}
+	};
+	const downloadData = async () => {
+		try {
+			const endpoint = `/admin/nastrigo/export-sellers-excel?city=${selectedCity}`;
+
+			const response = await axios.get(endpoint, {
+				responseType: "blob", // important to handle files
+			});
+
+			// Create a URL for the blob
+			const url = window.URL.createObjectURL(
+				new Blob([response.data])
+			);
+
+			// Create a link element
+			const link = document.createElement("a");
+			link.href = url;
+			link.setAttribute(
+				"download",
+				`sellers_${selectedCity || "all"}.xlsx`
+			); // or .xlsx based on server
+			document.body.appendChild(link);
+
+			// Auto click to download
+			link.click();
+
+			// Cleanup
+			link.parentNode.removeChild(link);
+
+			console.log("Data downloaded");
+		} catch (error) {
+			console.error(
+				"Error downloading seller status:",
 				error
 			);
 		}
@@ -344,6 +380,24 @@ function Sellers() {
 						</button>
 					))}
 				</div>
+			</div>
+
+			<h1>Download data for the City {selectedCity}</h1>
+			<div className="flex justify-center items-center gap-5">
+				<select
+					value={selectedCity}
+					onChange={(e) => setSelectedCity(e.target.value)}
+					className="px-4 py-2 rounded-lg border"
+				>
+					<option value="">All Cities</option>
+					<option value="Jabalpur">Jabalpur</option>
+					<option value="Bulandshahr">Bulandshahr</option>
+					<option value="Katni">Katni</option>
+				</select>
+
+				<button onClick={downloadData} className="">
+					Download Pdf <Download />
+				</button>
 			</div>
 		</div>
 	);

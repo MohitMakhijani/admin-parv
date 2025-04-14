@@ -124,8 +124,8 @@ function Dashboard() {
 				axios.get(`admin/nastrigo/get-gender-distribution`),
 			]);
 			console.log(
-				"seller monthy=",
-				sellerRegistrationsmonthly.data.data
+				"sales yearly=",
+				monthlyStats.salesyearlyRes
 			);
 			setAnalytics(analyticsRes.data.data);
 			setSalesData(salesRes.data.data);
@@ -483,33 +483,32 @@ function Dashboard() {
 				<h2 className="text-xl font-semibold mb-4">
 					Last Monthly Sales
 				</h2>
-				<BarChart
+				<LineChart
 					width={800}
 					height={300}
 					data={monthlyStats.salesyearlyRes}
 				>
 					<CartesianGrid strokeDasharray="3 3" />
-					<XAxis dataKey="month" />
-					<YAxis dataKey="bookings" />
+					<XAxis dataKey="month" />{" "}
+					{/* (Optional) Add 月 for month */}
+					<YAxis />
 					<Tooltip />
 					<Legend />
 					<Line
 						type="monotone"
-						dataKey="revenue"
+						dataKey="month"
+						name="Revenue"
 						stroke="#8884d8"
 					/>
 					<Line
 						type="monotone"
-						dataKey="bookings"
+						dataKey="count"
+						name="Bookings"
 						stroke="#82ca9d"
 					/>
-				</BarChart>
+				</LineChart>
 			</div>
-			{/* <SellerRegistrationAnalysis
-				monthlyStats={
-					monthlyStats.sellerRegistrationsmonthly
-				}
-			/> */}
+
 			<h1>monthly seller regestration</h1>
 			<LineChart
 				width={800}
