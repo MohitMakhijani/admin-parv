@@ -2,6 +2,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom"; // <--- add this
 
 import { TbEyeClosed, TbEyeCheck } from "react-icons/tb";
 
@@ -135,7 +136,9 @@ const LogIn = () => {
 							<div>{errors.password.message}</div>
 						)}
 					</span>
-
+                    <span className="text-sm text-blue-600 hover:underline mt-2 text-right block">
+                      <Link to="/forget-password">Forgot Password?</Link>
+                    </span>
 					<span className="mt-5">
 						<button
 							disabled={loading}

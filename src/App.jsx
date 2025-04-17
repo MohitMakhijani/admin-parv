@@ -19,6 +19,7 @@ import SeasonsComponent from "./pages/Seasons";
 import Category from "./pages/Category";
 import Customer from "./pages/Customer";
 import Report from "./pages/Report";
+import ForgetPassword from "./pages/ForgetPassword";
 
 // Configure axios defaults
 axios.defaults.baseURL = "http://localhost:8000/api/v1";
@@ -151,6 +152,14 @@ function App() {
 								<LoggedInRoutes>
 									<Support />
 								</LoggedInRoutes>
+							}
+						/>
+						<Route
+							path="/forget-password"
+							element={
+								// <LoggedInRoutes>
+									<ForgetPassword />
+								// </LoggedInRoutes>
 							}
 						/>
 					</Routes>
