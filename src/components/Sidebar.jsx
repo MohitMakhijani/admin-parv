@@ -21,10 +21,13 @@ function Sidebar() {
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   const handleLogout = () => {
+    setShowLogoutDialog(false); // close the dialog first
     localStorage.clear();
-    navigate("/login");
+    setTimeout(() => {
+      navigate("/login");
+    }, 100); // short delay to allow React to update state
   };
-
+  
   const menuItems = [
     { path: "/", icon: LayoutDashboard, label: "Dashboard" },
     { path: "/sellers", icon: Store, label: "Sellers" },

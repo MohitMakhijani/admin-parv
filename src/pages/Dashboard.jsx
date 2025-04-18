@@ -481,7 +481,7 @@ function Dashboard() {
 			{/* sales yearly */}
 			<div className="bg-white p-6 rounded-lg shadow mb-8 flex justify-center">
 				<h2 className="text-xl font-semibold mb-4">
-					Last Monthly Sales
+					Last Yearly Sales
 				</h2>
 				<LineChart
 					width={800}
@@ -534,34 +534,48 @@ function Dashboard() {
 					name="Pending"
 				/>
 			</LineChart>
-			<h1>Yearly seller regestration</h1>
-			<LineChart
-				width={800}
-				height={300}
-				data={formattedData1}
-				className="mt-8"
-			>
-				<CartesianGrid strokeDasharray="3 3" />
-				<XAxis dataKey="count" />
-				<YAxis />
-				<Tooltip />
-				<Legend />
-				<Line
-					type="monotone"
-					dataKey="approved"
-					stroke="#4CAF50" // Green for approved
-					name="Approved"
-				/>
-				<Line
-					type="monotone"
-					dataKey="pending"
-					stroke="red" // Orange for pending
-					name="Pending"
-				/>
-			</LineChart>
-			<GenderDistribution gender={gender} />
-			{/* seller analytics */}
-		</div>
+			<h1>Yearly Seller Registration</h1>
+<LineChart
+  width={800}
+  height={300}
+  data={formattedData1}
+  className="mt-8"
+>
+  <CartesianGrid strokeDasharray="3 3" />
+  
+  {/* X-axis showing month numbers */}
+  <XAxis 
+    dataKey="monthNumber" 
+    label={{ value: 'Month', position: 'insideBottom', offset: -5 }}
+  />
+
+  {/* Y-axis showing counts */}
+  <YAxis 
+    label={{ value: 'Count', angle: -90, position: 'insideLeft' }} 
+  />
+
+  <Tooltip />
+  <Legend />
+
+  {/* Approved registrations */}
+  <Line
+    type="monotone"
+    dataKey="approved"
+    stroke="#4CAF50"
+    name="Approved"
+  />
+
+  {/* Pending registrations */}
+  <Line
+    type="monotone"
+    dataKey="pending"
+    stroke="red"
+    name="Pending"
+  />
+</LineChart>
+
+<GenderDistribution gender={gender} />
+			</div>
 	);
 }
 
