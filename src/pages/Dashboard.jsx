@@ -113,7 +113,7 @@ function Dashboard() {
 					`admin/nastrigo/get-sales-complete-analysis?month=${months}`
 				),
 				axios.get(
-					`/admin/nastrigo/get-customer-registration-analysis?year=${year}`
+					`/admin/nastrigo/get-sales-complete-analysis?year=${year}`
 				),
 				axios.get(
 					`admin/nastrigo/get-seller-registration-analysis?month=${months}`
@@ -123,10 +123,7 @@ function Dashboard() {
 				),
 				axios.get(`admin/nastrigo/get-gender-distribution`),
 			]);
-			console.log(
-				"sales yearly=",
-				monthlyStats.salesyearlyRes
-			);
+
 			setAnalytics(analyticsRes.data.data);
 			setSalesData(salesRes.data.data);
 			setTotalRevenue(revenueRes.data.data.total);
@@ -151,21 +148,19 @@ function Dashboard() {
 				sellerRegistrationsyearly:
 					sellerRegistrationsyearly.data.data,
 			});
+			console.log(
+				"sales yearly=",
+				monthlyStats.salesyearlyRes
+			);
 
 			setTotalStats({
 				products: totalProductRes.data.data.count,
 				salesStatus: salesStatusRes.data.data,
 			});
-			console.log(
-				"yearly customer regestration",
-				yearlycustomerRes.data.data
-			);
+
 			setsevendayssales(sevendayssales.data.data);
 		} catch (error) {
-			console.error(
-				"Error fetching dashboard data:",
-				error
-			);
+
 		}
 	};
 	const formattedData =
@@ -192,6 +187,7 @@ function Dashboard() {
 		monthlyStats.sellerRegistrationsyearly.map((item) => {
 			let approved = 0;
 			let pending = 0;
+			let month = 1 ;
 
 			item.statuses.forEach((statusObj) => {
 				if (statusObj.status === "Approved") {
@@ -200,16 +196,20 @@ function Dashboard() {
 				if (statusObj.status === "Pending") {
 					pending = statusObj.count;
 				}
+			   
+				month = item.month;
 			});
 
 			return {
 				day: item.day,
+				monthNumber: month,
 				approved,
 				pending,
+			
+				
 			};
 		});
 
-	console.log("gender", gender);
 
 	return (
 		<div className="p-6">
@@ -489,24 +489,24 @@ function Dashboard() {
 					data={monthlyStats.salesyearlyRes}
 				>
 					<CartesianGrid strokeDasharray="3 3" />
-					<XAxis dataKey="month" />{" "}
-					{/* (Optional) Add 月 for month */}
-					<YAxis />
+					<XAxis dataKey="month" />
+					<YAxis dataKey='bookings' />
 					<Tooltip />
 					<Legend />
 					<Line
 						type="monotone"
-						dataKey="month"
+						dataKey="revenue"
 						name="Revenue"
 						stroke="#8884d8"
 					/>
 					<Line
 						type="monotone"
-						dataKey="count"
+						dataKey="bookings"
 						name="Bookings"
 						stroke="#82ca9d"
 					/>
 				</LineChart>
+
 			</div>
 
 			<h1>monthly seller regestration</h1>
@@ -535,47 +535,48 @@ function Dashboard() {
 				/>
 			</LineChart>
 			<h1>Yearly Seller Registration</h1>
-<LineChart
-  width={800}
-  height={300}
-  data={formattedData1}
-  className="mt-8"
->
-  <CartesianGrid strokeDasharray="3 3" />
-  
-  {/* X-axis showing month numbers */}
-  <XAxis 
-    dataKey="monthNumber" 
-    label={{ value: 'Month', position: 'insideBottom', offset: -5 }}
-  />
+			<LineChart
+				width={800}
+				height={300}
+				data={formattedData1}
+				className="mt-8"
+			>
+				<CartesianGrid strokeDasharray="3 3" />
 
-  {/* Y-axis showing counts */}
-  <YAxis 
-    label={{ value: 'Count', angle: -90, position: 'insideLeft' }} 
-  />
+				{/* X-axis showing month numbers */}
+				<XAxis
+					dataKey="monthNumber" 
+					label={{ value: 'Month', position: 'insideBottom', offset: -5 }}
+				/>
 
-  <Tooltip />
-  <Legend />
+				{/* Y-axis showing counts */}
+				<YAxis
+					// dataKey="day" 
+					label={{ value: 'Count', angle: -90, position: 'insideLeft' }}
+				/>
 
-  {/* Approved registrations */}
-  <Line
-    type="monotone"
-    dataKey="approved"
-    stroke="#4CAF50"
-    name="Approved"
-  />
+				<Tooltip />
+				<Legend />
 
-  {/* Pending registrations */}
-  <Line
-    type="monotone"
-    dataKey="pending"
-    stroke="red"
-    name="Pending"
-  />
-</LineChart>
+				{/* Approved registrations */}
+				<Line
+					type="monotone"
+					dataKey="approved"
+					stroke="#4CAF50"
+					name="Approved"
+				/>
 
-<GenderDistribution gender={gender} />
-			</div>
+				{/* Pending registrations */}
+				<Line
+					type="monotone"
+					dataKey="pending"
+					stroke="red"
+					name="Pending"
+				/>
+			</LineChart>
+
+			<GenderDistribution gender={gender} />
+		</div>
 	);
 }
 
